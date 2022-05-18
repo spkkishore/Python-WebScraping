@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
+import sys
+from datetime import datetime as dt
 
 def get_driver():
   options = webdriver.ChromeOptions()
@@ -14,11 +16,20 @@ def get_driver():
   driver.get("http://automated.pythonanywhere.com/login/")
   return driver
 
+
+
 def clean_text(text):
   """Extract only the temperature from text"""
   output = float(text.split(": ")[1])
   return output
-  
+
+
+def write_file(text):
+  """Write input text into a text file"""
+  filename = f"{dt.now().strftime('%Y-%m-%d.%H-%M-%S')}.txt"
+  with open(filename, 'w') as file:
+    file.write(text)
+
 def main():
   driver = get_driver()
   driver.find_element(by="id", value="id_username").send_keys("automated")
@@ -28,6 +39,7 @@ def main():
   driver.find_element(by="xpath", value="/html/body/nav/div/a").click()
   time.sleep(2)
   element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[2]").text
-  return clean_text(element)
+  text = str(clean_text(element))
+  write_file(text)
 
-print(main())
+main()
